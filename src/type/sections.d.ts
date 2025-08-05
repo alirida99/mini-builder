@@ -1,24 +1,28 @@
 // types/sections.d.ts
+import { FC } from "react";
+import {
+  HeaderProps,
+  HeroProps,
+  FeaturesProps,
+  FooterProps,
+} from "../lib/types";
+
 declare module "@/components/sections/HeaderSection" {
-  import { FC } from "react";
-  const HeaderSection: FC<any>;
+  const HeaderSection: FC<HeaderProps>;
   export default HeaderSection;
 }
 
 declare module "@/components/sections/HeroSection" {
-  import { FC } from "react";
-  const HeroSection: FC<any>;
+  const HeroSection: FC<HeroProps>;
   export default HeroSection;
 }
 
 declare module "@/components/sections/FeaturesSection" {
-  import { FC } from "react";
-  const FeaturesSection: FC<any>;
+  const FeaturesSection: FC<FeaturesProps>;
   export default FeaturesSection;
 }
 
 declare module "@/components/sections/FooterSection" {
-  import { FC } from "react";
-  const FooterSection: FC<any>;
+  const FooterSection: FC<FooterProps>;
   export default FooterSection;
 }

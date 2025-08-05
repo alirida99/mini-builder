@@ -15,7 +15,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { Section, useBuilderStore } from "../lib/store";
+import { useBuilderStore } from "../lib/store";
+import { Section } from "../lib/types";
 import { SortableSection } from "./SortableSection";
 
 // Import section components
@@ -23,8 +24,24 @@ import HeaderSection from "./sections/HeaderSection";
 import HeroSection from "./sections/HeroSection";
 import FeaturesSection from "./sections/FeaturesSection";
 import FooterSection from "./sections/FooterSection";
+import { Feature, NavigationItem } from "src/lib/types";
 
-const SECTION_COMPONENTS: Record<string, React.ComponentType<any>> = {
+type SectionComponentProps = {
+  siteName?: string;
+  navigation?: NavigationItem[];
+  title?: string;
+  subtitle?: string;
+  buttonText?: string;
+  buttonLink?: string;
+  features?: Feature[];
+  copyrightText?: string;
+  links?: NavigationItem[];
+};
+
+const SECTION_COMPONENTS: Record<
+  string,
+  React.ComponentType<SectionComponentProps>
+> = {
   header: HeaderSection,
   hero: HeroSection,
   features: FeaturesSection,

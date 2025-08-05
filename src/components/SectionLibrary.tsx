@@ -1,8 +1,14 @@
 "use client";
 
+import { JSX } from "react";
 import { useBuilderStore } from "../lib/store";
+import { SectionType } from "../lib/types"; // adjust path as needed
 
-const SECTION_TYPES = [
+const SECTION_TYPES: {
+  type: SectionType;
+  name: string;
+  icon: JSX.Element;
+}[] = [
   {
     type: "header",
     name: "Header",

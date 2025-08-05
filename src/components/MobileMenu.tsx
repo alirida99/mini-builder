@@ -1,13 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { useBuilderStore } from "src/lib/store";
 
 export default function MobileMenu() {
-  const [showPanels, setShowPanels] = useState({
-    library: false,
-    properties: false,
-  });
   const togglePanel = useBuilderStore((state) => state.toggleMobilePanel);
 
   return (

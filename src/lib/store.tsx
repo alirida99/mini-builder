@@ -1,52 +1,46 @@
+// lib/store.ts
 import { create } from "zustand";
+import {
+  BuilderState,
+  SectionType,
+  HeaderProps,
+  HeroProps,
+  FeaturesProps,
+  FooterProps,
+  SectionProps,
+} from "./types";
 
-export type Section = {
-  id: string;
-  type: string;
-  props: Record<string, any>;
-};
+// Overloads to specify exact return types for each SectionType
+function createDefaultProps(type: "header"): HeaderProps;
+function createDefaultProps(type: "hero"): HeroProps;
+function createDefaultProps(type: "features"): FeaturesProps;
+function createDefaultProps(type: "footer"): FooterProps;
+function createDefaultProps(type: SectionType): SectionProps; // <-- catch-all overload
 
-export type BuilderState = {
-  sections: Section[];
-  selectedSection: string | null;
-  addSection: (type: string) => void;
-  removeSection: (id: string) => void;
-  selectSection: (id: string) => void;
-  updateSection: (id: string, props: Record<string, any>) => void;
-  reorderSections: (fromIndex: number, toIndex: number) => void;
-  exportJson: () => string;
-  importJson: (json: string) => void;
-  mobilePanels: {
-    library: boolean;
-    properties: boolean;
-  };
-  toggleMobilePanel: (panel: "library" | "properties") => void;
-};
-
-export const useBuilderStore = create<BuilderState>((set, get) => ({
-  sections: [],
-  selectedSection: null,
-  addSection: (type) =>
-    set((state) => {
-      const defaultProps: Record<string, any> = {};
-
-      // Set default props based on section type
-      if (type === "header") {
-        defaultProps.siteName = "My Website";
-        defaultProps.navigation = [
+// Implementation
+function createDefaultProps(type: SectionType): SectionProps {
+  switch (type) {
+    case "header":
+      return {
+        siteName: "My Website",
+        navigation: [
           { label: "Home", url: "#" },
           { label: "About", url: "#" },
           { label: "Contact", url: "#" },
-        ];
-      } else if (type === "hero") {
-        defaultProps.title = "Welcome to our website";
-        defaultProps.subtitle = "This is a hero section you can customize";
-        defaultProps.buttonText = "Get Started";
-        defaultProps.buttonLink = "#";
-      } else if (type === "features") {
-        defaultProps.title = "Our Features";
-        defaultProps.subtitle = "Discover what makes us special";
-        defaultProps.features = [
+        ],
+      };
+    case "hero":
+      return {
+        title: "Welcome to our website",
+        subtitle: "This is a hero section you can customize",
+        buttonText: "Get Started",
+        buttonLink: "#",
+      };
+    case "features":
+      return {
+        title: "Our Features",
+        subtitle: "Discover what makes us special",
+        features: [
           { title: "Feature 1", description: "This is a feature description." },
           {
             title: "Feature 2",
@@ -56,26 +50,45 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
             title: "Feature 3",
             description: "This is a third feature description.",
           },
-        ];
-      } else if (type === "footer") {
-        defaultProps.copyrightText = "© 2023 My Website. All rights reserved.";
-        defaultProps.links = [
+        ],
+      };
+    case "footer":
+      return {
+        copyrightText: "© 2023 My Website. All rights reserved.",
+        links: [
           { label: "Privacy Policy", url: "#" },
           { label: "Terms of Service", url: "#" },
           { label: "Contact", url: "#" },
-        ];
-      }
+        ],
+      };
+    default:
+      throw new Error(`Unknown section type: ${type}`);
+  }
+}
+
+export const useBuilderStore = create<BuilderState>((set, get) => ({
+  sections: [],
+  selectedSection: null,
+  mobilePanels: {
+    library: false,
+    properties: false,
+  },
+  addSection: (type) =>
+    set((state) => {
+      const defaultProps = createDefaultProps(type);
+
+      const newId = Date.now().toString();
 
       return {
         sections: [
           ...state.sections,
           {
-            id: Date.now().toString(),
+            id: newId,
             type,
             props: defaultProps,
           },
         ],
-        selectedSection: Date.now().toString(),
+        selectedSection: newId,
       };
     }),
   removeSection: (id) =>
@@ -88,7 +101,12 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
   updateSection: (id, props) =>
     set((state) => ({
       sections: state.sections.map((section) =>
-        section.id === id ? { ...section, props } : section
+        section.id === id
+          ? {
+              ...section,
+              props: { ...section.props, ...props },
+            }
+          : section
       ),
     })),
   reorderSections: (fromIndex, toIndex) =>
@@ -118,10 +136,6 @@ export const useBuilderStore = create<BuilderState>((set, get) => ({
       console.error("Invalid JSON:", error);
       return false;
     }
-  },
-  mobilePanels: {
-    library: false,
-    properties: false,
   },
   toggleMobilePanel: (panel) =>
     set((state) => ({
